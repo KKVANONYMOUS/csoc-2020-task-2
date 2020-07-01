@@ -24,10 +24,12 @@ class Migration(migrations.Migration):
                 ('description', models.TextField(null=True)),
                 ('mrp', models.PositiveIntegerField()),
                 ('rating', models.FloatField(default=0.0)),
+                
             ],
             options={
                 'ordering': ('title',),
             },
+            
         ),
         migrations.CreateModel(
             name='BookCopy',
