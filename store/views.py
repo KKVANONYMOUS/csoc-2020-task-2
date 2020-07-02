@@ -42,8 +42,11 @@ def bookListView(request):
 
 @login_required
 def viewLoanedBooks(request):
+    username = None
+    if request.user.is_authenticated:
+        username = request.user
     template_name = 'store/loaned_books.html'
-    loan=BookCopy.objects.filter(status=True)
+    loan=BookCopy.objects.filter(status=True,borrower=username)
     context = {
         'books': loan,
     }
@@ -67,9 +70,14 @@ def loanBookView(request):
         id=request.POST.get('bid',' ')
         b=Book.objects.get(id=id)
         copy=BookCopy.objects.filter(book=b)
+        username = None
+        if request.user.is_authenticated:
+            username = request.user
         for x in copy:
             if x.status==False:
                 x.status=True
+                x.borrower=username
+                
                 now=datetime.datetime.now()
                 x.borrow_date=now.strftime("%Y-%m-%d")
                 x.save()
@@ -109,6 +117,7 @@ def returnBookView(request):
         for x in copy:
             if x.status==True:
                 x.status=False
+                x.borrow_date=None
                 x.save()
                 response_data={
                     'message':'success'
@@ -116,4 +125,41 @@ def returnBookView(request):
                 return JsonResponse(response_data)
         return JsonResponse(response_data)
 
+@csrf_exempt
+@login_required
+def rateBookView(request):
+    if request.method=="POST":
+        response_data = {
+            'message': 'failure',
+        }
+        id=request.POST.get('bid',' ')
+        rating=request.POST.get('rating',' ')
+        
+        b=Book.objects.get(id=id)
+        currentRatedbook=Rate.objects.filter(book=b)
+        flag=0
+        for x in currentRatedbook:
+            if x.user==request.user.username:
+                print(x.rating)
+                flag=1
+                x.rating=rating
+                x.save()
+                response_data={
+                    'message':'success'
+                }
+        if flag==0:
+            r=Rate(book=b,user=request.user,rating=rating)
+            r.save()
+            response_data={
+                'message':'success'
+            }
+        totalRating=0
+        totalRatingdone=len(currentRatedbook)    
+        for x in currentRatedbook:
+            totalRating=totalRating+float(x.rating)
+        avgRating=totalRating/totalRatingdone
+        b.rating=avgRating
+        b.save()
 
+        return JsonResponse(response_data)    
+   

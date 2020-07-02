@@ -21,7 +21,23 @@
     <dt>Available Copies:</dt>
     <dd>{{ num_available }}</dd>
 </dl>
-<button class="btn btn-primary" id="loan-button">Loan {{ book.title }}</button>
+
+<button class="btn btn-success" id="loan-button">Loan {{ book.title }}</button>
+<p class="font-weight-bold mt-2">Read {{ book.title }}!! Please give a minute to rate it..<span class="font-weight-normal">(Please rate it on the index of 0 to 10)</span></p>
+<form class="form-horizonal">
+<div class="control-group mb-2">
+            <label class="control-label" for="rating">Rating:</label>
+            <div class="controls">
+                <input type="number" id="rating" min="0" max="10" step="0.1">
+            </div>
+        </div>
+		 <div class="control-group">
+            <div class="controls">
+                <button type="submit" class="btn btn-warning" id="rate-button">Rate {{ book.title }} </button>
+            </div>
+        </div>
+
+</form>
 <script>
 $("#loan-button").click(function(){
     $.ajax({
@@ -37,6 +53,32 @@ $("#loan-button").click(function(){
 			}
 			else{
 				alert("Unable to issue this book");
+			}
+		},
+		error: function(xhr, status, err){
+			alert("Some error occured");
+		}
+
+	})
+});
+
+$("#rate-button").click(function(){
+    const rating=document.getElementById("rating").value;
+    console.log(rating)
+    $.ajax({
+		url: "{% url 'rate-book' %}",
+		method: "POST",
+		data: {
+			bid: {{ book.id }},
+            rating: rating
+		},
+		success: function(data, status, xhr){
+			if(data['message'] == "success"){
+                alert("Thank You for rating");
+                location.reload();
+			}
+			else{
+				alert("Unable to update rating");
 			}
 		},
 		error: function(xhr, status, err){
