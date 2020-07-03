@@ -23,6 +23,7 @@
 </dl>
 
 <button class="btn btn-success" id="loan-button">Loan {{ book.title }}</button>
+{% if user.is_authenticated %}
 <p class="font-weight-bold mt-2">Read {{ book.title }}!! Please give a minute to rate it..<span class="font-weight-normal">(Please rate it on the index of 0 to 10)</span></p>
 <form class="form-horizonal">
 <div class="control-group mb-2">
@@ -38,6 +39,7 @@
         </div>
 
 </form>
+{% endif%}
 <script>
 $("#loan-button").click(function(){
     $.ajax({

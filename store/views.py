@@ -144,12 +144,14 @@ def rateBookView(request):
                 flag=1
                 x.rating=rating
                 x.save()
+                x.refresh_from_db()
                 response_data={
                     'message':'success'
                 }
         if flag==0:
             r=Rate(book=b,user=request.user,rating=rating)
             r.save()
+            r.refresh_from_db()
             response_data={
                 'message':'success'
             }

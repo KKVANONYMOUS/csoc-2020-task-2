@@ -6,24 +6,10 @@
 
 {% block content %}
 
-{% comment %} <h2>Login</h2>
-<form method="post">
-  {% csrf_token %}
-  {% if form.errors %}
-  <p>There are errors in the form</p>
-  {% endif %}
-  {{ form.as_p }}
-  <button type="submit">Login</button>
-</form> {% endcomment %}
+
 <div id="login">
         <form class="form-horizontal" name="LoginForm"  method="post">
         {% csrf_token %}
-        {% if next %}
-            <input type="hidden" name="next" value="{{ next }}" />
-        {% endif %}
-        {% if form.errors %}
-        <p>There are errors in the form</p>
-        {% endif %}
         <div class="control-group mb-2">
             <label class="control-label" for="username">Username</label>
             <div class="controls">
@@ -42,5 +28,11 @@
             </div>
         </div>
         </form>
+        {% if form.errors %}
+        <p class="text-danger">Username or Password wrong...Please try again</p>
+        {% endif %}
     </div>
+<style>
+
+</style>
 {% endblock %}
